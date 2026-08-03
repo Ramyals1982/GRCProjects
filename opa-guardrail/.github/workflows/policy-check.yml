@@ -3,6 +3,7 @@ name: OPA Guardrail Engine
 on:
   pull_request:
     branches: [ main ]
+    workflow_dispatch:
 
 jobs:
   policy-enforcement:
