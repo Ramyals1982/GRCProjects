@@ -1,0 +1,41 @@
+name: Shift-Left Guardrail Engine
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  policy-enforcement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Run Policy Unit Tests
+        run: opa test policies/ -v
+
+      - name: Generate Terraform Plan JSON
+        run: |
+          cd terraform
+          terraform init -backend=false
+          terraform plan -out=tfplan.binary
+          terraform show -json tfplan.binary > tfplan.json
+
+      - name: Evaluate Guardrails with OPA
+        run: |
+          EVAL_RESULT=$(opa eval --format pretty --data policies/ --input terraform/tfplan.json "data.terraform.guardrails.deny")
+          echo "$EVAL_RESULT"
+          
+          # Fail pipeline if violations are present
+          if [ "$EVAL_RESULT" != "[]" ]; then
+            echo "::error::Guardrail checks failed! Non-compliant infrastructure detected."
+            exit 1
+          fi

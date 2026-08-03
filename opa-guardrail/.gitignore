@@ -1,0 +1,8 @@
+"tfplan.binary" 
+"tfplan.json" 
+".terraform/" 
+"/terraform/.terraform/" 
+
+.terraform/
+tfplan.binary
+tfplan.json
