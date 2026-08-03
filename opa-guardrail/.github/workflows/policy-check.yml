@@ -1,4 +1,4 @@
-name: Shift-Left Guardrail Engine
+name: OPA Guardrail Engine
 
 on:
   pull_request:
