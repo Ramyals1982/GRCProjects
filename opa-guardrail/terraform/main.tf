@@ -22,7 +22,7 @@ resource "aws_s3_bucket" "bad_bucket" {
 
   tags = {
     Environment = "Dev"
-    # Missing: CostCenter tag
+    CostCenter = "FINANCE"
   }
 }
 
